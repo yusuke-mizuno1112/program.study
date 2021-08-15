@@ -40,8 +40,12 @@ def make_data_array():#画像のベクトルを行列にする
 data_list = make_data_array()
 
 def sigmoid(array):
-
-    answer = 1.0/(1.0 + math.exp())
+    (width, height) = array.shape
+    answer = np.empty((width, height))
+    for y in range(height):
+        for x in range(width):
+            answer[y][x] = 1.0/(1.0 + math.exp(array[y][x]))
+            print("exp=" , math.exp(array[y][x]))
     return answer
 
 def h_theta(x, theta):
@@ -56,4 +60,6 @@ def h_theta(x, theta):
 
 
 theta = np.zeros((160000,1))
+theta += 1
 h_theta(data_list, theta)
+#print(h_theta)
