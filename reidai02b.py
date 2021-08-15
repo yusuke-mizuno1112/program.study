@@ -56,3 +56,6 @@ elif (   (x==0 and y==1) #グー　　対 チョキ
     print("勝ち")
 else:
     print("負け")
+
+
+#add comment
