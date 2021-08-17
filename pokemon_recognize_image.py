@@ -23,8 +23,8 @@ def make_gray_data(filenumber):#一つの画像を読み込んでベクトルに
     data = gray_img_array.reshape(-1).T  #reshape array into vector
     return data
 
-def make_data_array():#画像のベクトルを行列にする
-    for i in range(1,11): #とりあえず10個にしてるよ
+def make_data_array(images):#画像のベクトルを行列にする
+    for i in range(1,images+1): #とりあえず10個にしてるよ
         filenumber = str(i).zfill(3)   #1→001とかに変換
         if i == 1:
             data_list = [make_gray_data(filenumber)]
@@ -36,27 +36,21 @@ def make_data_array():#画像のベクトルを行列にする
     all_data = np.stack(temp)
     return all_data
 
-data_list = make_data_array()
+data_list = make_data_array(10)
 
 def sigmoid(array):
     (hight, width) = array.shape
     answer = np.empty((hight, width))
-    print(array.shape, answer.shape)
     for row in range(hight):
         for column in range(width):
-            answer[row][column] = 1 #1.0/(1.0 + math.exp(array[row][column]))
-            print(array[row][column])
             if array[row][column] >710:
                 answer[row][column] = 1
             else:
-                answer[row][column] =0
-    print(answer)
+                answer[row][column] =1.0/(1.0 + math.exp(array[row][column]))
     return answer
 
 def h_theta(x, theta):
     z = np.dot(x,theta)
-    print(z)
-
     h_theta = sigmoid(z)
     return h_theta
 
@@ -66,5 +60,5 @@ def h_theta(x, theta):
 
 theta = np.zeros((160000,1))
 theta += 1
-h_theta(data_list, theta)
-#print(h_theta)
+print("h_theta=\n", h_theta(data_list, theta))
+
