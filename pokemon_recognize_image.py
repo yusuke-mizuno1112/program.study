@@ -36,8 +36,6 @@ def make_data_array(images):#画像のベクトルを行列にする
     all_data = np.stack(temp)
     return all_data
 
-data_list = make_data_array(10)
-
 def sigmoid(array):
     (hight, width) = array.shape
     answer = np.empty((hight, width))
@@ -54,11 +52,14 @@ def h_theta(x, theta):
     h_theta = sigmoid(z)
     return h_theta
 
-
 #def CostFunction(x,y,theta,lam):
 
+#def Backpropagation()
 
+#def Refresh_theta(J_theta)
+
+data_list = make_data_array(5) #読み込む画像の枚数 マックス890枚くらい
 theta = np.zeros((160000,1))
-theta += 1
-print("h_theta=\n", h_theta(data_list, theta))
+theta += 1   #これはなんとなく
+print("\nh_theta=\n", h_theta(data_list, theta)) # \nは正規表現で言う改行だよ
 
