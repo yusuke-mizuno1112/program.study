@@ -24,13 +24,15 @@ def make_gray_data(filenumber):#一つの画像を読み込んでベクトルに
     return data
 
 def make_data_array(images):#画像のベクトルを行列にする
-    for i in range(1,images+1): #とりあえず10個にしてるよ
+    for i in range(0,images+1): #とりあえず10個にしてるよ
         filenumber = str(i).zfill(3)   #1→001とかに変換
-        if i == 1:
-            data_list = [make_gray_data(filenumber)]
+        if i == 0: #バイアスユニットの生成
+            data_list = [make_gray_data("001")]
+            for j in range(len(data_list)):
+                data_list[0][j] = 1
         else:
             data_list.append(make_gray_data(filenumber))
-        print('Now loading   ' + str(filenumber) + '   image...')
+            print('Now loading   ' + str(filenumber) + '   image...')
 
     temp = tuple(data_list)
     all_data = np.stack(temp)
@@ -41,8 +43,10 @@ def sigmoid(array):
     answer = np.empty((hight, width))
     for row in range(hight):
         for column in range(width):
-            if array[row][column] >710:
+            if array[row][column] >500: #expがバグるので大きめのところで切ってる
                 answer[row][column] = 1
+            elif array[row][column] < -500:
+                answer[row][column] = 0
             else:
                 answer[row][column] =1.0/(1.0 + math.exp(array[row][column]))
     return answer
@@ -54,12 +58,15 @@ def h_theta(x, theta):
 
 #def CostFunction(x,y,theta,lam):
 
-#def Backpropagation()
+#def Backpropagation():
 
-#def Refresh_theta(J_theta)
+#def Refresh_theta(J_theta):
 
-data_list = make_data_array(5) #読み込む画像の枚数 マックス890枚くらい
-theta = np.zeros((160000,1))
-theta += 1   #これはなんとなく
-print("\nh_theta=\n", h_theta(data_list, theta)) # \nは正規表現で言う改行だよ
+#def Predict():
 
+data_list = make_data_array(3) #読み込む画像の枚数 マックス890枚くらい
+theta_1 = np.zeros((160000,1))
+theta_1 += 1   #これはなんとなく
+print("\ndate_list_shape = ", data_list.shape)
+print("theta_1_shape = ", theta_1.shape)
+print("h_theta_1 = \n", h_theta(data_list, theta_1)) # \nは正規表現で言う改行だよ
