@@ -76,23 +76,30 @@ def load_data(file_path):
         for x in range(width):
             gray_img_array[y][x] = gray_img.getpixel((x,y))
     data = gray_img_array.reshape(-1)  #reshape array into vector
-    data = np.insert(data, [0], 1) #バイアス追加
-    data = data[np.newaxis, :].T #次元数が1しかないので追加 https://www.kamishima.net/mlmpyja/nbayes2/shape.html
+    data = addBias(data) #バイアス追加
     return data
+
+def addBias(vector):
+    vector = np.insert(vector, [0], 1)
+    vector = vector[:, np.newaxis] #次元数が0しかないので追加 https://www.kamishima.net/mlmpyja/nbayes2/shape.html
+    return vector
 
 num_pokemon = 3 #判別するポケモンの種類の数、アウトプット
 data_list = make_data_array(3) #読み込む画像の枚数 マックス890枚くらい
+loaded_data = load_data('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/001.png')
+#とりあえず最初の写真読み込んでるだけ　本来はデータセットにない未知のデータ
 
 theta_1 = np.zeros((25, 160001))
-theta_2 = np.zeros((26, num_pokemon)) #想定しているのはinput,output含め四層構造
-loaded_data = load_data('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/001.png')
+theta_2 = np.zeros((num_pokemon, 26)) #想定しているのはinput,output含め四層構造
+a1 = addBias(np.dot(theta_1, loaded_data))
+a2 = addBias(np.dot(theta_2, a1))
 
 print("\ndata_list_shape = ", data_list.shape)
 print("theta_1_shape = ", theta_1.shape)
 print("theta_2_shape = ", theta_2.shape)
 print("loaded_data_shape = ", loaded_data.shape)
-print(sigmoid(loaded_data))
+#print(sigmoid(loaded_data))
 print()
-print(np.dot(theta_1, loaded_data))
+print(a1)
 print()
-print()
+print(a2)
