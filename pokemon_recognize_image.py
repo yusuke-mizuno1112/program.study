@@ -82,6 +82,7 @@ def load_data(file_path):
 
 num_pokemon = 3 #判別するポケモンの種類の数、アウトプット
 data_list = make_data_array(3) #読み込む画像の枚数 マックス890枚くらい
+
 theta_1 = np.zeros((25, 160001))
 theta_2 = np.zeros((26, num_pokemon)) #想定しているのはinput,output含め四層構造
 loaded_data = load_data('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/001.png')
