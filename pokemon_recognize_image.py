@@ -91,15 +91,17 @@ loaded_data = load_data('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_
 
 theta_1 = np.zeros((25, 160001))
 theta_2 = np.zeros((num_pokemon, 26)) #想定しているのはinput,output含め四層構造
+theta_3 = np.zeros((1, num_pokemon))
 a1 = addBias(np.dot(theta_1, loaded_data))
 a2 = addBias(np.dot(theta_2, a1))
 
 print("\ndata_list_shape = ", data_list.shape)
 print("theta_1_shape = ", theta_1.shape)
 print("theta_2_shape = ", theta_2.shape)
+print("theta_3_shape = ", theta_3.shape)
 print("loaded_data_shape = ", loaded_data.shape)
 #print(sigmoid(loaded_data))
 print()
-print(a1)
+print(theta_3)
 print()
 print(a2)
