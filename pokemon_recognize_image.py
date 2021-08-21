@@ -52,12 +52,9 @@ def sigmoid(array):
     return answer
 
 
-'''
-def h_theta(x, theta):
-    z = np.dot(x,theta)
+def h_theta(z):
     h_theta = sigmoid(z)
     return h_theta
-'''
 
 #def CostFunction(x,y,theta,lam):
 
@@ -93,7 +90,9 @@ theta_1 = np.zeros((25, 160001))
 theta_2 = np.zeros((num_pokemon, 26)) #想定しているのはinput,output含め四層構造
 theta_3 = np.zeros((1, num_pokemon))
 a1 = addBias(np.dot(theta_1, loaded_data))
-a2 = addBias(np.dot(theta_2, a1))
+a2 = np.dot(theta_2, a1)
+z = a2 * theta_3.T
+h_theta_x = sigmoid(z)
 
 print("\ndata_list_shape = ", data_list.shape)
 print("theta_1_shape = ", theta_1.shape)
@@ -105,3 +104,7 @@ print()
 print(theta_3)
 print()
 print(a2)
+print()
+print(z)
+print()
+print(h_theta_x)
