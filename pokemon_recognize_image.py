@@ -77,7 +77,7 @@ def load_data(file_path):
             gray_img_array[y][x] = gray_img.getpixel((x,y))
     data = gray_img_array.reshape(-1)  #reshape array into vector
     data = np.insert(data, [0], 1) #バイアス追加
-    data = data[np.newaxis, :].T
+    data = data[np.newaxis, :].T #次元数が1しかないので追加 https://www.kamishima.net/mlmpyja/nbayes2/shape.html
     return data
 
 num_pokemon = 3 #判別するポケモンの種類の数、アウトプット
