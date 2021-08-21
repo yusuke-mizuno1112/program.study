@@ -45,7 +45,7 @@ def sigmoid(array):
         for column in range(width):
             if array[row][column] >500: #expがバグるので大きめのところで切ってる
                 answer[row][column] = 1
-            elif array[row][column] < -500:
+            elif array[row][column] < -500: #速度向上のため
                 answer[row][column] = 0
             else:
                 answer[row][column] =1.0/(1.0 + math.exp(array[row][column]))
