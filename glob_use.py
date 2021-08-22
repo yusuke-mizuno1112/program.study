@@ -31,4 +31,4 @@ def make_data_array(images):#画像のベクトルを行列にする
             name = os.path.basename(files[j])
             print('Now loading   ' + name)
 
-data_list = make_data_array(3)
+data_list = make_data_array(4)
