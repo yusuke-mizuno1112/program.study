@@ -51,7 +51,6 @@ def sigmoid(array):
                 answer[row][column] =1.0/(1.0 + math.exp(array[row][column]))
     return answer
 
-
 def h_theta(z):
     h_theta = sigmoid(z)
     return h_theta
@@ -62,7 +61,12 @@ def h_theta(z):
 
 #def Refresh_theta(J_theta):
 
-#def Predict():
+def Predict(data, theta_1, theta_2, theta_3):
+    a1 = addBias(np.dot(theta_1, data))
+    a2 = np.dot(theta_2, a1)
+    z = a2 * theta_3.T
+    h_theta_x = sigmoid(z)
+    return h_theta_x
 
 def load_data(file_path):
     img = Image.open(file_path)
@@ -81,6 +85,16 @@ def addBias(vector):
     vector = vector[:, np.newaxis] #次元数が0しかないので追加 https://www.kamishima.net/mlmpyja/nbayes2/shape.html
     return vector
 
+def PrintResult(data_list,theta_1,theta_2,theta_3,loaded_data):
+    print("\ndata_list_shape = ", data_list.shape)
+    print("theta_1_shape = ", theta_1.shape)
+    print("theta_2_shape = ", theta_2.shape)
+    print("theta_3_shape = ", theta_3.shape)
+    print("loaded_data_shape = ", loaded_data.shape)
+    print()
+    print("predict_result =")
+    print(Predict(loaded_data, theta_1, theta_2, theta_3))
+
 num_pokemon = 3 #判別するポケモンの種類の数、アウトプット
 data_list = make_data_array(3) #読み込む画像の枚数 マックス890枚くらい
 loaded_data = load_data('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/001.png')
@@ -89,22 +103,5 @@ loaded_data = load_data('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_
 theta_1 = np.zeros((25, 160001))
 theta_2 = np.zeros((num_pokemon, 26)) #想定しているのはinput,output含め四層構造
 theta_3 = np.zeros((1, num_pokemon))
-a1 = addBias(np.dot(theta_1, loaded_data))
-a2 = np.dot(theta_2, a1)
-z = a2 * theta_3.T
-h_theta_x = sigmoid(z)
 
-print("\ndata_list_shape = ", data_list.shape)
-print("theta_1_shape = ", theta_1.shape)
-print("theta_2_shape = ", theta_2.shape)
-print("theta_3_shape = ", theta_3.shape)
-print("loaded_data_shape = ", loaded_data.shape)
-#print(sigmoid(loaded_data))
-print()
-print(theta_3)
-print()
-print(a2)
-print()
-print(z)
-print()
-print(h_theta_x)
+PrintResult(data_list,theta_1,theta_2,theta_3,loaded_data)
