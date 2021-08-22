@@ -32,7 +32,7 @@ def make_data_array(num_images, files):#複数の画像のベクトルを行列�
         data_list[0][j] = 1
     for i in range(0,num_images):
         data_list.append(make_gray_data(files[i]))
-        name = os.path.basename(files[i])
+        name = os.path.basename(files[i]) #ファイル名を取得　https://note.nkmk.me/python-os-basename-dirname-split-splitext/
         sys.stdout.write("\033[2K\033[G")
         sys.stdout.flush()    #行をクリア　http://www.mm2d.net/main/prog/c/console-02.html
         print('Now processing \033[32m %s \033[0m (%d/%d)'% (name, i+1, num_images),end='',flush=True) #\033[ は色つけただけ
