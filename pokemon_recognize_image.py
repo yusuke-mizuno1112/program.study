@@ -4,16 +4,18 @@ Created on Thu Aug 12 18:22:58 2021
 @author: mkamono
 """
 
+import glob2
 from PIL import Image
 import numpy as np
+import os
 import math
+import sys
 
-def make_gray_data(filenumber):#一つの画像を読み込んでベクトルにする作業
+def make_gray_data(filepath):#一つの画像を読み込んでベクトルにする作業
     #linux
-    file_path = '/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/' + filenumber + '.png' #make file path
     #windows
     #file_path = 'C:/Users/trash/Google ドライブ/python/spyder/script_file/B2programing/pokemon.json-master/images/' + filenumber + '.png'
-    img = Image.open(file_path)
+    img = Image.open(filepath)
     gray_img = img.convert('L')
     width, height = gray_img.size
     gray_img_array = np.empty((height, width), dtype='int')  #make empty array having the size of image data
@@ -23,17 +25,27 @@ def make_gray_data(filenumber):#一つの画像を読み込んでベクトルに
     data = gray_img_array.reshape(-1).T  #reshape array into vector
     return data
 
-def make_data_array(images):#画像のベクトルを行列にする
-    for i in range(0,images+1):
-        filenumber = str(i).zfill(3)   #1→001とかに変換
-        if i == 0: #バイアスユニットの生成
-            data_list = [make_gray_data("001")]
-            for j in range(len(data_list)):
-                data_list[0][j] = 1
-        else:
-            data_list.append(make_gray_data(filenumber))
-            print('Now loading   ' + str(filenumber) + '   image...')
-
+def make_data_array(num_images):#複数の画像のベクトルを行列にする
+    #linux
+    files = glob2.glob('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/*.png')
+    #windows
+    #files = glob2.glob('C:/Users/trash/Google ドライブ/python/spyder/script_file/B2programing/pokemon.json-master/images/*')
+    print()
+    data_list = [make_gray_data(files[0])]
+    for j in range(len(data_list)):
+        data_list[0][j] = 1
+    for i in range(0,num_images):
+        data_list.append(make_gray_data(files[i]))
+        name = os.path.basename(files[i])
+        sys.stdout.write("\033[2K\033[G")
+        sys.stdout.flush()    #行をクリア　http://www.mm2d.net/main/prog/c/console-02.html
+        print('Now processing         %s (%d/%d)'% (name, i+1, num_images),end='',flush=True)
+        #https://note.nkmk.me/python-print-basic/   %の使い方に関して
+        #https://dot-blog.jp/news/python-print-overwrite-output/　endオプションに関して
+        #https://qiita.com/mmsstt/items/469a9346ce545709f53c flushオプションに関して
+    sys.stdout.write("\033[2K\033[G")
+    sys.stdout.flush()
+    print("\rCompleted (%d/%d)" % (num_images, num_images))
     temp = tuple(data_list)
     all_data = np.stack(temp)
     return all_data
@@ -96,7 +108,7 @@ def PrintResult(data_list,theta_1,theta_2,theta_3,loaded_data):
     print(Predict(loaded_data, theta_1, theta_2, theta_3))
 
 num_pokemon = 3 #判別するポケモンの種類の数、アウトプット
-data_list = make_data_array(3) #読み込む画像の枚数 マックス890枚くらい
+data_list = make_data_array(30) #読み込む画像の枚数 マックス890枚くらい
 loaded_data = load_data('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/001.png')
 #とりあえず最初の写真読み込んでるだけ　本来はデータセットにない未知のデータ
 theta_list = []
