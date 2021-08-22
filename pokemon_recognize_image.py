@@ -38,6 +38,18 @@ def make_data_array(images):#画像のベクトルを行列にする
     all_data = np.stack(temp)
     return all_data
 
+def load_data(file_path):
+    img = Image.open(file_path)
+    gray_img = img.convert('L')
+    width, height = gray_img.size
+    gray_img_array = np.empty((height, width), dtype='int')  #make empty array having the size of image data
+    for y in range(height):
+        for x in range(width):
+            gray_img_array[y][x] = gray_img.getpixel((x,y))
+    data = gray_img_array.reshape(-1)  #reshape array into vector
+    data = addBias(data) #バイアス追加
+    return data
+
 def sigmoid(array):
     (hight, width) = array.shape
     answer = np.empty((hight, width))
@@ -55,6 +67,11 @@ def h_theta(z):
     h_theta = sigmoid(z)
     return h_theta
 
+def addBias(vector):
+    vector = np.insert(vector, [0], 1)
+    vector = vector[:, np.newaxis] #次元数が0しかないので追加 https://www.kamishima.net/mlmpyja/nbayes2/shape.html
+    return vector
+
 #def CostFunction(x,y,theta,lam):
 
 #def Backpropagation():
@@ -67,23 +84,6 @@ def Predict(data, theta_1, theta_2, theta_3):
     z = a2 * theta_3.T
     h_theta_x = sigmoid(z)
     return h_theta_x
-
-def load_data(file_path):
-    img = Image.open(file_path)
-    gray_img = img.convert('L')
-    width, height = gray_img.size
-    gray_img_array = np.empty((height, width), dtype='int')  #make empty array having the size of image data
-    for y in range(height):
-        for x in range(width):
-            gray_img_array[y][x] = gray_img.getpixel((x,y))
-    data = gray_img_array.reshape(-1)  #reshape array into vector
-    data = addBias(data) #バイアス追加
-    return data
-
-def addBias(vector):
-    vector = np.insert(vector, [0], 1)
-    vector = vector[:, np.newaxis] #次元数が0しかないので追加 https://www.kamishima.net/mlmpyja/nbayes2/shape.html
-    return vector
 
 def PrintResult(data_list,theta_1,theta_2,theta_3,loaded_data):
     print("\ndata_list_shape = ", data_list.shape)
