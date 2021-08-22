@@ -13,6 +13,7 @@ import sys
 
 def make_gray_data(filepath):#一つの画像を読み込んでベクトルにする作業
     img = Image.open(filepath)
+
     gray_img = img.convert('L')
     width, height = gray_img.size
     gray_img_array = np.empty((height, width), dtype='int')  #make empty array having the size of image data
@@ -42,6 +43,7 @@ def make_data_array(num_images, files):#複数の画像のベクトルを行列�
     sys.stdout.write("\033[2K\033[G")
     sys.stdout.flush()
     print("\r\033[34mProcess Completed (%d/%d)\033[0m" % (num_images, num_images))
+
     temp = tuple(data_list)
     all_data = np.stack(temp)
     return all_data
@@ -61,6 +63,7 @@ def load_data(file_path):
 def sigmoid(array):
     (hight, width) = array.shape
     answer = np.empty((hight, width))
+
     for row in range(hight):
         for column in range(width):
             if array[row][column] >500: #expがバグるので大きめのところで切ってる
