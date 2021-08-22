@@ -41,7 +41,7 @@ def make_data_array(num_images, files):#複数の画像のベクトルを行列�
         #https://qiita.com/mmsstt/items/469a9346ce545709f53c flushオプションに関して
     sys.stdout.write("\033[2K\033[G")
     sys.stdout.flush()
-    print("\r\033[34mCompleted (%d/%d)\033[0m" % (num_images, num_images))
+    print("\r\033[34mProcess Completed (%d/%d)\033[0m" % (num_images, num_images))
     temp = tuple(data_list)
     all_data = np.stack(temp)
     return all_data
@@ -109,7 +109,6 @@ def make_theta(outputs):
     theta_list.append(np.zeros((outputs, 26))) #想定しているのはinput,output含め四層構造
     theta_list.append(np.zeros((1, outputs)))
     return theta_list
-
 
 files = glob2.glob('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/*.png')
 #画像のある階層を指定して、拡張子であるpngを指定する
