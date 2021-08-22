@@ -78,8 +78,8 @@ def addBias(vector):
 
 #def Refresh_theta(J_theta):
 
-def Predict(data, theta_1, theta_2, theta_3):
-    a1 = addBias(np.dot(theta_1, data))
+def Predict(data_list, theta_1, theta_2, theta_3):
+    a1 = addBias(np.dot(theta_1, data_list))
     a2 = np.dot(theta_2, a1)
     z = a2 * theta_3.T
     h_theta_x = sigmoid(z)
@@ -105,3 +105,5 @@ theta_list.append(np.zeros((num_pokemon, 26))) #想定しているのはinput,ou
 theta_list.append(np.zeros((1, num_pokemon)))
 
 PrintResult(data_list,theta_list[0],theta_list[1],theta_list[2],loaded_data)
+
+print(np.log(Predict(loaded_data,theta_list[0],theta_list[1],theta_list[2])))
