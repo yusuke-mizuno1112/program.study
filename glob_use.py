@@ -17,18 +17,24 @@ def make_gray_data(filepath):#一つの画像を読み込んでベクトルに�
     data = gray_img_array.reshape(-1).T  #reshape array into vector
     return data
 
-def make_data_array(images):#画像のベクトルを行列にする
-    for i in range(0,images+1):
-        files = glob2.glob('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/*')
-        #filenumber = str(i).zfill(3)   #1→001とかに変換
-        if i == 0: #バイアスユニットの生成
-            data_list = [make_gray_data(files[0])]
-            for j in range(len(data_list)):
-                data_list[0][j] = 1
-        else:
-            j = i-1
-            data_list.append(make_gray_data(files[j]))
-            name = os.path.basename(files[j])
-            print('Now loading   ' + name)
+def make_data_array(num_images):#複数の画像のベクトルを行列にする
+    #linux
+    files = glob2.glob('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/*.png')
+    #windows
+    #files = glob2.glob('C:/Users/trash/Google ドライブ/python/spyder/script_file/B2programing/pokemon.json-master/images/*')
+    print()
+    data_list = [make_gray_data(files[0])]
+    for j in range(len(data_list)):
+        data_list[0][j] = 1
+    for i in range(0,num_images):
+        data_list.append(make_gray_data(files[i]))
+        name = os.path.basename(files[i])
+        print('\rNow processing %s (%d/%d)'% (name, i+1, num_images) ,end='')
+        #https://note.nkmk.me/python-print-basic/   %の使い方に関して
+        #https://dot-blog.jp/news/python-print-overwrite-output/　\r,endオプションに関して
+    print("\rCompleted (%d/%d)                                        " % (num_images, num_images))
 
-data_list = make_data_array(4)
+data_list = make_data_array(10)
+
+import time
+
