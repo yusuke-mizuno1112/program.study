@@ -45,7 +45,7 @@ def make_data_array(num_images):#複数の画像のベクトルを行列にす�
         #https://qiita.com/mmsstt/items/469a9346ce545709f53c flushオプションに関して
     sys.stdout.write("\033[2K\033[G")
     sys.stdout.flush()
-    print("\rCompleted (%d/%d)" % (num_images, num_images))
+    print("\r\033[34mCompleted (%d/%d)\033[0m" % (num_images, num_images))
     temp = tuple(data_list)
     all_data = np.stack(temp)
     return all_data
@@ -107,14 +107,19 @@ def PrintResult(data_list,theta_1,theta_2,theta_3,loaded_data):
     print("predict_result =")
     print(Predict(loaded_data, theta_1, theta_2, theta_3))
 
+def make_theta(num_pokemon):
+    theta_list = []
+    theta_list.append(np.zeros((25, 160001)))
+    theta_list.append(np.zeros((num_pokemon, 26))) #想定しているのはinput,output含め四層構造
+    theta_list.append(np.zeros((1, num_pokemon)))
+    return theta_list
+
 num_pokemon = 3 #判別するポケモンの種類の数、アウトプット
-data_list = make_data_array(30) #読み込む画像の枚数 マックス890枚くらい
+data_list = make_data_array(10) #読み込む画像の枚数 マックス890枚くらい
 loaded_data = load_data('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/001.png')
 #とりあえず最初の写真読み込んでるだけ　本来はデータセットにない未知のデータ
-theta_list = []
-theta_list.append(np.zeros((25, 160001)))
-theta_list.append(np.zeros((num_pokemon, 26))) #想定しているのはinput,output含め四層構造
-theta_list.append(np.zeros((1, num_pokemon)))
+
+theta_list = make_theta(num_pokemon)
 
 PrintResult(data_list,theta_list[0],theta_list[1],theta_list[2],loaded_data)
 
