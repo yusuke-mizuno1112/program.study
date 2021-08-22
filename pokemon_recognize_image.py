@@ -39,7 +39,7 @@ def make_data_array(num_images):#複数の画像のベクトルを行列にす�
         name = os.path.basename(files[i])
         sys.stdout.write("\033[2K\033[G")
         sys.stdout.flush()    #行をクリア　http://www.mm2d.net/main/prog/c/console-02.html
-        print('Now processing         %s (%d/%d)'% (name, i+1, num_images),end='',flush=True)
+        print('Now processing \033[32m %s \033[0m (%d/%d)'% (name, i+1, num_images),end='',flush=True) #\033[ は色つけただけ
         #https://note.nkmk.me/python-print-basic/   %の使い方に関して
         #https://dot-blog.jp/news/python-print-overwrite-output/　endオプションに関して
         #https://qiita.com/mmsstt/items/469a9346ce545709f53c flushオプションに関して
