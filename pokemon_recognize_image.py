@@ -106,4 +106,4 @@ theta_list.append(np.zeros((1, num_pokemon)))
 
 PrintResult(data_list,theta_list[0],theta_list[1],theta_list[2],loaded_data)
 
-print(np.log(Predict(loaded_data,theta_list[0],theta_list[1],theta_list[2])))
+print("\nlog(hx) = \n",np.log(Predict(loaded_data,theta_list[0],theta_list[1],theta_list[2])))
