@@ -33,8 +33,3 @@ def make_data_array(num_images):#複数の画像のベクトルを行列にす�
         #https://note.nkmk.me/python-print-basic/   %の使い方に関して
         #https://dot-blog.jp/news/python-print-overwrite-output/　\r,endオプションに関して
     print("\rCompleted (%d/%d)                                        " % (num_images, num_images))
-
-data_list = make_data_array(10)
-
-import time
-
