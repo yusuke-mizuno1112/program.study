@@ -99,9 +99,9 @@ num_pokemon = 3 #判別するポケモンの種類の数、アウトプット
 data_list = make_data_array(3) #読み込む画像の枚数 マックス890枚くらい
 loaded_data = load_data('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/001.png')
 #とりあえず最初の写真読み込んでるだけ　本来はデータセットにない未知のデータ
+theta_list = []
+theta_list.append(np.zeros((25, 160001)))
+theta_list.append(np.zeros((num_pokemon, 26))) #想定しているのはinput,output含め四層構造
+theta_list.append(np.zeros((1, num_pokemon)))
 
-theta_1 = np.zeros((25, 160001))
-theta_2 = np.zeros((num_pokemon, 26)) #想定しているのはinput,output含め四層構造
-theta_3 = np.zeros((1, num_pokemon))
-
-PrintResult(data_list,theta_1,theta_2,theta_3,loaded_data)
+PrintResult(data_list,theta_list[0],theta_list[1],theta_list[2],loaded_data)
