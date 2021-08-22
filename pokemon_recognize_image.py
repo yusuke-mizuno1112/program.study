@@ -12,9 +12,6 @@ import math
 import sys
 
 def make_gray_data(filepath):#一つの画像を読み込んでベクトルにする作業
-    #linux
-    #windows
-    #file_path = 'C:/Users/trash/Google ドライブ/python/spyder/script_file/B2programing/pokemon.json-master/images/' + filenumber + '.png'
     img = Image.open(filepath)
     gray_img = img.convert('L')
     width, height = gray_img.size
@@ -25,9 +22,8 @@ def make_gray_data(filepath):#一つの画像を読み込んでベクトルに�
     data = gray_img_array.reshape(-1).T  #reshape array into vector
     return data
 
-def make_data_array(num_images):#複数の画像のベクトルを行列にする
+def make_data_array(num_images, files):#複数の画像のベクトルを行列にする
     #linux
-    files = glob2.glob('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/*.png')
     #windows
     #files = glob2.glob('C:/Users/trash/Google ドライブ/python/spyder/script_file/B2programing/pokemon.json-master/images/*')
     print()
@@ -107,19 +103,22 @@ def PrintResult(data_list,theta_1,theta_2,theta_3,loaded_data):
     print("predict_result =")
     print(Predict(loaded_data, theta_1, theta_2, theta_3))
 
-def make_theta(num_pokemon):
+def make_theta(outputs):
     theta_list = []
     theta_list.append(np.zeros((25, 160001)))
-    theta_list.append(np.zeros((num_pokemon, 26))) #想定しているのはinput,output含め四層構造
-    theta_list.append(np.zeros((1, num_pokemon)))
+    theta_list.append(np.zeros((outputs, 26))) #想定しているのはinput,output含め四層構造
+    theta_list.append(np.zeros((1, outputs)))
     return theta_list
 
-num_pokemon = 3 #判別するポケモンの種類の数、アウトプット
-data_list = make_data_array(10) #読み込む画像の枚数 マックス890枚くらい
+
+files = glob2.glob('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/*.png')
+#画像のある階層を指定して、拡張子であるpngを指定する
 loaded_data = load_data('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/001.png')
 #とりあえず最初の写真読み込んでるだけ　本来はデータセットにない未知のデータ
 
-theta_list = make_theta(num_pokemon)
+outputs = 3 #判別するポケモンの種類の数、アウトプット
+data_list = make_data_array(10, files) #読み込む画像の枚数 マックス890枚くらい
+theta_list = make_theta(outputs) #theta 初期化
 
 PrintResult(data_list,theta_list[0],theta_list[1],theta_list[2],loaded_data)
 
