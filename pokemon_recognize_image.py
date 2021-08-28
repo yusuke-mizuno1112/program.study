@@ -10,6 +10,7 @@ import numpy as np
 import os
 import math
 import sys
+import h5py
 
 def make_gray_data(filepath):#一つの画像を読み込んでベクトルにする作業
     img = Image.open(filepath)
@@ -31,7 +32,7 @@ def make_data_array(num_images, files):#複数の画像のベクトルを行列�
     for j in range(len(data_list)):
         data_list[0][j] = 1
     for i in range(0,num_images):
-        data_list.append(make_gray_data(files[i]))
+        data_list.append(make_gray_data(files[i]))#以下はだいたいコンソールの表示に関することなので流し読みで結構
         name = os.path.basename(files[i]) #ファイル名を取得　https://note.nkmk.me/python-os-basename-dirname-split-splitext/
         sys.stdout.write("\033[2K\033[G")
         sys.stdout.flush()    #行をクリア　http://www.mm2d.net/main/prog/c/console-02.html
