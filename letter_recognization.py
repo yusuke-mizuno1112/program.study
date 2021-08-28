@@ -80,7 +80,13 @@ def addBias(vector):
     vector = vector[:, np.newaxis] #次元数が0しかないので追加 https://www.kamishima.net/mlmpyja/nbayes2/shape.html
     return vector
 
-#def CostFunction(x,y,theta,lam):
+def CostFunction(x,y,theta,lam):
+    num_data_list = x.shape[0]
+    for i in range(num_data_list):
+        for k in range(outputs):
+            
+    Cost =1
+    return Cost
 
 #def Backpropagation():
 
@@ -106,20 +112,45 @@ def PrintResult(data_list,theta_1,theta_2,theta_3,loaded_data):
 
 def make_theta(outputs):
     theta_list = []
-    theta_list.append(np.zeros((25, 160001)))
+    theta_list.append(np.zeros((25, 401)))
     theta_list.append(np.zeros((outputs, 26))) #想定しているのはinput,output含め四層構造
     theta_list.append(np.zeros((1, outputs)))
     return theta_list
 
-files = glob2.glob('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/*.png')
+#files = glob2.glob('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/*.png')
 #画像のある階層を指定して、拡張子であるpngを指定する
-loaded_data = load_data('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/001.png')
+#loaded_data = load_data('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/001.png')
 #とりあえず最初の写真読み込んでるだけ　本来はデータセットにない未知のデータ
 
 outputs = 10 #判別するポケモンの種類の数、アウトプット
-data_list = make_data_array(10, files) #読み込む画像の枚数 マックス890枚くらい
+#data_list = make_data_array(0, files) #読み込む画像の枚数 マックス890枚くらい
 theta_list = make_theta(outputs) #theta 初期化
 
-PrintResult(data_list,theta_list[0],theta_list[1],theta_list[2],loaded_data)
+#PrintResult(data_list,theta_list[0],theta_list[1],theta_list[2],loaded_data)
 
-print("\nlog(hx) = \n",np.log(Predict(loaded_data,theta_list[0],theta_list[1],theta_list[2])))
+#print("\nlog(hx) = \n",np.log(Predict(loaded_data,theta_list[0],theta_list[1],theta_list[2])))
+
+"""以下matファイルを使った作業"""
+#参考　https://www.delftstack.com/ja/howto/python/read-mat-files-python/#python-%25E3%2581%25A7-numpy-%25E3%2583%25A2%25E3%2582%25B8%25E3%2583%25A5%25E3%2583%25BC%25E3%2583%25AB%25E3%2582%2592%25E4%25BD%25BF%25E7%2594%25A8%25E3%2581%2597%25E3%2581%25A6mat-%25E3%2583%2595%25E3%2582%25A1%25E3%2582%25A4%25E3%2583%25AB%25E3%2582%2592%25E8%25AA%25AD%25E3%2581%25BF%25E5%258F%2596%25E3%2582%258A%25E3%2581%25BE%25E3%2581%2599
+
+X = scipy.io.loadmat('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/ex4data1.mat')["X"]
+y_label = scipy.io.loadmat('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/ex4data1.mat')["y"]
+y = np.zeros((y_label.shape[0], outputs))
+y_label[np.where(y_label == 10)] = 0
+
+for i in range(y_label.shape[0]):
+    j = int(y_label[i])
+    y[i][j] = 1
+
+print(y)
+
+def y_vector(index): #yの呼び出しのためだけの関数
+    return y[:,index:index+1]
+
+print("X-shape = ", X.shape)
+print("y-shape = ", y_label.shape)
+
+print(Predict(X[0],theta_list[0],theta_list[1],theta_list[2]))
+
+J = CostFunction(X, y, theta_list, 0.1)
+print(J)
