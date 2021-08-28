@@ -10,7 +10,7 @@ import numpy as np
 import os
 import math
 import sys
-import h5py
+import scipy.io
 
 def make_gray_data(filepath):#一つの画像を読み込んでベクトルにする作業
     img = Image.open(filepath)
@@ -117,9 +117,15 @@ loaded_data = load_data('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_
 #とりあえず最初の写真読み込んでるだけ　本来はデータセットにない未知のデータ
 
 outputs = 3 #判別するポケモンの種類の数、アウトプット
-data_list = make_data_array(10, files) #読み込む画像の枚数 マックス890枚くらい
+data_list = make_data_array(1, files) #読み込む画像の枚数 マックス890枚くらい
 theta_list = make_theta(outputs) #theta 初期化
 
 PrintResult(data_list,theta_list[0],theta_list[1],theta_list[2],loaded_data)
 
 print("\nlog(hx) = \n",np.log(Predict(loaded_data,theta_list[0],theta_list[1],theta_list[2])))
+
+"""以下matファイルを使った作業"""
+#参考　https://www.delftstack.com/ja/howto/python/read-mat-files-python/#python-%25E3%2581%25A7-numpy-%25E3%2583%25A2%25E3%2582%25B8%25E3%2583%25A5%25E3%2583%25BC%25E3%2583%25AB%25E3%2582%2592%25E4%25BD%25BF%25E7%2594%25A8%25E3%2581%2597%25E3%2581%25A6mat-%25E3%2583%2595%25E3%2582%25A1%25E3%2582%25A4%25E3%2583%25AB%25E3%2582%2592%25E8%25AA%25AD%25E3%2581%25BF%25E5%258F%2596%25E3%2582%258A%25E3%2581%25BE%25E3%2581%2599
+
+mat = scipy.io.loadmat('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/ex4data1.mat')
+print(mat)
