@@ -82,10 +82,12 @@ def addBias(vector):
 
 def CostFunction(x,y,theta,lam):
     num_data_list = x.shape[0]
-    for i in range(num_data_list):
-        for k in range(outputs):
-            
-    Cost =1
+    Cost = 0 
+    for m in range(num_data_list):
+        y_m = ((y[m])[:,np.newaxis])
+        log = np.log(Predict(x[m],theta[0],theta[1],theta[2]))
+        Cost += np.sum((y_m*log)+((1-y_m)*(1-log)))
+    Cost += (np.sum(theta[0]**2) + np.sum(theta[1]**2) + np.sum(theta[2]**2))
     return Cost
 
 #def Backpropagation():
