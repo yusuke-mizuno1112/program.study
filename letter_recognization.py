@@ -85,22 +85,43 @@ def CostFunction(x,y,theta,lam):
     Cost = 0 
     for m in range(num_data_list):
         y_m = ((y[m])[:,np.newaxis])
-        log = np.log(Predict(x[m],theta[0],theta[1],theta[2]))
+        log = np.log(Predict(x[m],theta[0],theta[1],theta[2])[0])
         Cost += np.sum((y_m*log)+((1-y_m)*(1-log)))
-    Cost += (np.sum(theta[0]**2) + np.sum(theta[1]**2) + np.sum(theta[2]**2))
+    Cost += lam*(np.sum(theta[0]**2) + np.sum(theta[1]**2) + np.sum(theta[2]**2))
     return Cost
 
-#def Backpropagation():
+def Backpropagation(x,y,theta):
+    num_data_list = x.shape[0]
+    DELTA_1 = []
+    DELTA_2 = []
+    for m in range(num_data_list):
+        x_m = x[m]
+        y_m = y[m][:, np.newaxis]
+
+        (a4, a2, a3) = Predict(x_m,theta[0],theta[1],theta[2])
+        a1 = addBias(x_m)
+
+        delta_3 = y_m - a4
+        delta_2 = (np.dot(theta[1].T, delta_3))*((a2)*(1-a2))
+        if m == 0:
+            DELTA_2 = np.dot(delta_3,a2.T)
+            DELTA_1 = np.dot(delta_2,a1.T)
+        else:
+            DELTA_2 += np.dot(delta_3,a2.T)
+            DELTA_1 += np.dot(delta_2,a1.T)
+
+    return(DELTA_1.shape,DELTA_2.shape)
+ 
 
 #def Refresh_theta(J_theta):
 
 def Predict(data_list, theta_1, theta_2, theta_3):
     data_list = addBias(data_list) #バイアス追加
-    a1 = addBias(np.dot(theta_1, data_list))
-    a2 = np.dot(theta_2, a1)
-    z = a2 * theta_3.T
+    a2 = addBias(np.dot(theta_1, data_list))
+    a3 = np.dot(theta_2, a2)
+    z = a3 * theta_3.T
     h_theta_x = sigmoid(z)
-    return h_theta_x
+    return h_theta_x, a2, a3
 
 def PrintResult(data_list,theta_1,theta_2,theta_3,loaded_data):
     print("\ndata_list_shape = ", data_list.shape)
@@ -110,7 +131,7 @@ def PrintResult(data_list,theta_1,theta_2,theta_3,loaded_data):
     print("loaded_data_shape = ", loaded_data.shape)
     print()
     print("predict_result =")
-    print(Predict(loaded_data, theta_1, theta_2, theta_3))
+    print(Predict(loaded_data, theta_1, theta_2, theta_3)[0])
 
 def make_theta(outputs):
     theta_list = []
@@ -130,7 +151,7 @@ theta_list = make_theta(outputs) #theta 初期化
 
 #PrintResult(data_list,theta_list[0],theta_list[1],theta_list[2],loaded_data)
 
-#print("\nlog(hx) = \n",np.log(Predict(loaded_data,theta_list[0],theta_list[1],theta_list[2])))
+#print("\nlog(hx) = \n",np.log(Predict(loaded_data,theta_list[0],theta_list[1],theta_list[2])[0]))
 
 """以下matファイルを使った作業"""
 #参考　https://www.delftstack.com/ja/howto/python/read-mat-files-python/#python-%25E3%2581%25A7-numpy-%25E3%2583%25A2%25E3%2582%25B8%25E3%2583%25A5%25E3%2583%25BC%25E3%2583%25AB%25E3%2582%2592%25E4%25BD%25BF%25E7%2594%25A8%25E3%2581%2597%25E3%2581%25A6mat-%25E3%2583%2595%25E3%2582%25A1%25E3%2582%25A4%25E3%2583%25AB%25E3%2582%2592%25E8%25AA%25AD%25E3%2581%25BF%25E5%258F%2596%25E3%2582%258A%25E3%2581%25BE%25E3%2581%2599
@@ -144,15 +165,18 @@ for i in range(y_label.shape[0]):
     j = int(y_label[i])
     y[i][j] = 1
 
-print(y)
-
 def y_vector(index): #yの呼び出しのためだけの関数
     return y[:,index:index+1]
 
 print("X-shape = ", X.shape)
 print("y-shape = ", y_label.shape)
 
-print(Predict(X[0],theta_list[0],theta_list[1],theta_list[2]))
+print("Predict = \n", Predict(X[0],theta_list[0],theta_list[1],theta_list[2])[0])
 
 J = CostFunction(X, y, theta_list, 0.1)
-print(J)
+print("Cost = ", J)
+
+print(Backpropagation(X, y, theta_list))
+
+for i in range(3):
+    print(theta_list[i].shape)
