@@ -103,7 +103,7 @@ def Backpropagation(x,y,theta):
 
         delta_3 = y_m - a4
         delta_2 = (np.dot(theta[1].T, delta_3))*((a2)*(1-a2))
-        delta_2 = np.delete(delta_2,0,0)
+        delta_2 = np.delete(delta_2,0,0) #delta[0]を除去
         if m == 0:
             DELTA_2 = np.dot(delta_3,a2.T)
             DELTA_1 = np.dot(delta_2,a1.T)
