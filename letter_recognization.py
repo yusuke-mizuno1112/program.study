@@ -120,7 +120,7 @@ def Backpropagation(x,y,theta,lam):
         print(CostFunction(x, y, theta, lam))
 
 
-    return(CostFunction(x, y, theta, lam), theta)
+    return(CostFunction(x, y, theta, lam))
  
 def calculate_D(theta,DELTA,lam,m):
     D = np.zeros((theta.shape))
