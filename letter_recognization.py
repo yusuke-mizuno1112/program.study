@@ -12,7 +12,7 @@ import math
 import sys
 import scipy.io
 import random
-
+"""
 def make_gray_data(filepath):#一つの画像を読み込んでベクトルにする作業
     img = Image.open(filepath)
     gray_img = img.convert('L')
@@ -58,6 +58,7 @@ def load_data(file_path):
             gray_img_array[y][x] = gray_img.getpixel((x,y))
     data = gray_img_array.reshape(-1)  #reshape array into vector
     return data
+"""
 
 def sigmoid(array):
     (hight, width) = array.shape
@@ -71,10 +72,6 @@ def sigmoid(array):
             else:
                 answer[row][column] =1.0/(1.0 + math.exp((-1) * array[row][column]))
     return answer
-
-def h_theta(z):
-    h_theta = sigmoid(z)
-    return h_theta
 
 def addBias(vector):
     vector = np.insert(vector, [0], 1)
@@ -91,7 +88,16 @@ def CostFunction(x,y,theta,lam):
     Cost += lam*(np.sum(theta[0]**2) + np.sum(theta[1]**2))
     return Cost
 
+def round_array(array):
+    array = np.round(array, decimals=2)
+    return array
+
 def Backpropagation(x,y,theta,lam):
+    x = round_array(x)
+
+    theta[0] = round_array(theta[0])
+    theta[1] = round_array(theta[1])
+
     num_data_list = x.shape[0]
     DELTA_1 = []
     DELTA_2 = []
@@ -117,7 +123,7 @@ def Backpropagation(x,y,theta,lam):
         D_2 = calculate_D(theta[1],DELTA_2,lam,m)
         Refresh_theta(theta, D_1, D_2)
 
-        print(CostFunction(x, y, theta, lam))
+        print("Cost = ", CostFunction(x, y, theta, lam))
 
 
     return(CostFunction(x, y, theta, lam))
@@ -131,7 +137,6 @@ def calculate_D(theta,DELTA,lam,m):
             D[i] = (1/m) * (DELTA[i] + (lam * theta[i]))
     return D
 
-
 def Refresh_theta(theta,D1,D2):
     theta[0] = theta[0] - D1
     theta[1] = theta[1] - D2
@@ -143,33 +148,24 @@ def Predict(data_list, theta_1, theta_2):
     a3 = sigmoid(np.dot(theta_2, a2))
     return a2, a3
 
-def PrintResult(data_list,theta_1,theta_2,loaded_data):
-    print("\ndata_list_shape = ", data_list.shape)
-    print("theta_1_shape = ", theta_1.shape)
-    print("theta_2_shape = ", theta_2.shape)
-    print("loaded_data_shape = ", loaded_data.shape)
-    print()
-    print("predict_result =")
-    print(Predict(loaded_data, theta_1, theta_2)[1])
-
 def make_theta(outputs):
     theta_list = []
-    theta_list.append(np.zeros((25, 401)))
-    theta_list.append(np.zeros((outputs, 26))) #想定しているのはinput,output含め四層構造
+    a = np.random.rand(25, 401) - 0.5
+    theta_list.append(a*0.24)
+    b = np.random.rand(outputs, 26) - 0.5
+    theta_list.append(b*0.24) #想定しているのはinput,output含め四層構造
     return theta_list
 
-#files = glob2.glob('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/*.png')
-#画像のある階層を指定して、拡張子であるpngを指定する
-#loaded_data = load_data('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/pokemon.json-master/images/001.png')
-#とりあえず最初の写真読み込んでるだけ　本来はデータセットにない未知のデータ
+def make_y_array(y_label, y):
+    for i in range(y_label.shape[0]):
+        j = int(y_label[i])
+        y[i][j] = 1
 
-outputs = 10 #判別するポケモンの種類の数、アウトプット
-#data_list = make_data_array(0, files) #読み込む画像の枚数 マックス890枚くらい
+outputs = 10 #アウトプット
 theta_list = make_theta(outputs) #theta 初期化
 
-#PrintResult(data_list,theta_list[0],theta_list[1],loaded_data)
 
-#print("\nlog(hx) = \n",np.log(Predict(loaded_data,theta_list[0],theta_list[1])[0]))
+
 
 """以下matファイルを使った作業"""
 #参考　https://www.delftstack.com/ja/howto/python/read-mat-files-python/#python-%25E3%2581%25A7-numpy-%25E3%2583%25A2%25E3%2582%25B8%25E3%2583%25A5%25E3%2583%25BC%25E3%2583%25AB%25E3%2582%2592%25E4%25BD%25BF%25E7%2594%25A8%25E3%2581%2597%25E3%2581%25A6mat-%25E3%2583%2595%25E3%2582%25A1%25E3%2582%25A4%25E3%2583%25AB%25E3%2582%2592%25E8%25AA%25AD%25E3%2581%25BF%25E5%258F%2596%25E3%2582%258A%25E3%2581%25BE%25E3%2581%2599
@@ -178,23 +174,20 @@ X = scipy.io.loadmat('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_fil
 y_label = scipy.io.loadmat('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/ex4data1.mat')["y"]
 y = np.zeros((y_label.shape[0], outputs))
 y_label[np.where(y_label == 10)] = 0
+lam = 0.1
+make_y_array(y_label, y)
 
-for i in range(y_label.shape[0]):
-    j = int(y_label[i])
-    y[i][j] = 1
-
-def y_vector(index): #yの呼び出しのためだけの関数
-    return y[:,index:index+1]
 
 print("X-shape = ", X.shape)
 print("y-shape = ", y_label.shape)
-
-print("Predict = \n", Predict(X[0],theta_list[0],theta_list[1])[1])
-
-J = CostFunction(X, y, theta_list, 0.1)
-print("Cost = ", J)
-
-print(Backpropagation(X, y, theta_list, 0.1))
-
 for i in range(2):
-    print(theta_list[i].shape)
+    print("theta_%s-shape = " % i, theta_list[i].shape)
+
+print("Predict = \n", Predict(X[10],theta_list[0],theta_list[1])[1])
+
+
+J = CostFunction(X, y, theta_list, lam)
+print("Initial Cost = ", J, "\n")
+
+Backpropagation(X, y, theta_list, lam)
+
