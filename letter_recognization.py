@@ -77,27 +77,27 @@ def addBias(vector):
     vector = np.insert(vector, [0], 1)
     vector = vector[:, np.newaxis] #次元数が0しかないので追加 https://www.kamishima.net/mlmpyja/nbayes2/shape.html
     return vector
+ 
+def calculate_D(theta,DELTA,lam,m):
+    D = np.zeros((theta.shape))
+    for i in range(theta.shape[0]):
+        if i == 0:
+            D[0] = (1/m) * DELTA[0]
+        else:
+            D[i] = (1/m) * (DELTA[i] + (lam * theta[i]))
+    return D
 
 def CostFunction(x,y,theta,lam):
     num_data_list = x.shape[0]
     Cost = 0 
     for m in range(num_data_list):
         y_m = ((y[m])[:,np.newaxis])
-        log = np.log(Predict(x[m],theta[0],theta[1])[1])
+        log = np.log(Predict(x[m],theta)[1])
         Cost += np.sum(y_m*log)+np.sum((1-y_m)*(1-log))
-    Cost += lam*(np.sum(theta[0]**2) + np.sum(theta[1]**2))
+    Cost += lam*(np.sum(theta[0][:, : 400]**2) + np.sum(theta[1][:, : 25]**2))
     return Cost
 
-def round_array(array):
-    array = np.round(array, decimals=2)
-    return array
-
 def Backpropagation(x,y,theta,lam):
-    x = round_array(x)
-
-    theta[0] = round_array(theta[0])
-    theta[1] = round_array(theta[1])
-
     num_data_list = x.shape[0]
     DELTA_1 = []
     DELTA_2 = []
@@ -108,7 +108,7 @@ def Backpropagation(x,y,theta,lam):
             x_m = x[M]
             y_m = y[M][:, np.newaxis]
             a1 = addBias(x_m)
-            (a2, a3) = Predict(x_m,theta[0],theta[1])
+            (a2, a3) = Predict(x_m,theta)
             
             delta_3 = y_m - a3
             delta_2 = (np.dot(theta[1].T, delta_3))*((a2)*(1-a2))
@@ -125,27 +125,17 @@ def Backpropagation(x,y,theta,lam):
 
         print("Cost = ", CostFunction(x, y, theta, lam))
 
-
     return(CostFunction(x, y, theta, lam))
- 
-def calculate_D(theta,DELTA,lam,m):
-    D = np.zeros((theta.shape))
-    for i in range(theta.shape[0]):
-        if i == 0:
-            D[0] = (1/m) * DELTA[0]
-        else:
-            D[i] = (1/m) * (DELTA[i] + (lam * theta[i]))
-    return D
 
 def Refresh_theta(theta,D1,D2):
     theta[0] = theta[0] - D1
     theta[1] = theta[1] - D2
     return
 
-def Predict(data_list, theta_1, theta_2):
+def Predict(data_list, theta):
     data_list = addBias(data_list) #バイアス追加
-    a2 = sigmoid(addBias(np.dot(theta_1, data_list)))
-    a3 = sigmoid(np.dot(theta_2, a2))
+    a2 = sigmoid(addBias(np.dot(theta[0], data_list)))
+    a3 = sigmoid(np.dot(theta[1], a2))
     return a2, a3
 
 def make_theta(outputs):
@@ -183,11 +173,10 @@ print("y-shape = ", y_label.shape)
 for i in range(2):
     print("theta_%s-shape = " % i, theta_list[i].shape)
 
-print("Predict = \n", Predict(X[10],theta_list[0],theta_list[1])[1])
+print("Predict = \n", Predict(X[10],theta_list))
 
 
 J = CostFunction(X, y, theta_list, lam)
 print("Initial Cost = ", J, "\n")
 
 Backpropagation(X, y, theta_list, lam)
-
