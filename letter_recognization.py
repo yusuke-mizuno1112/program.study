@@ -91,7 +91,7 @@ def CostFunction(x,y,theta,lam):
     num_data_list = x.shape[0]
     Cost = 0 
     for m in range(num_data_list):
-        y_m = ((y[m])[:,np.newaxis])
+        y_m = (y[m])[:,np.newaxis]
         log = np.log(Predict(x[m],theta)[1])
         Cost += np.sum(y_m*log)+np.sum((1-y_m)*(1-log))
     Cost += lam*(np.sum(theta[0][:, : 400]**2) + np.sum(theta[1][:, : 25]**2))
@@ -143,7 +143,7 @@ def make_theta(outputs):
     a = np.random.rand(25, 401) - 0.5
     theta_list.append(a*0.24)
     b = np.random.rand(outputs, 26) - 0.5
-    theta_list.append(b*0.24) #想定しているのはinput,output含め四層構造
+    theta_list.append(b*0.24)
     return theta_list
 
 def make_y_array(y_label, y):
@@ -173,7 +173,7 @@ print("y-shape = ", y_label.shape)
 for i in range(2):
     print("theta_%s-shape = " % i, theta_list[i].shape)
 
-print("Predict = \n", Predict(X[10],theta_list))
+print("Predict = \n", Predict(X[10],theta_list)[0])
 
 
 J = CostFunction(X, y, theta_list, lam)
