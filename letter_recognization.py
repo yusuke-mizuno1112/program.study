@@ -173,7 +173,7 @@ print("y-shape = ", y_label.shape)
 for i in range(2):
     print("theta_%s-shape = " % i, theta_list[i].shape)
 
-print("Predict = \n", Predict(X[10],theta_list)[0])
+print("Predict = \n", Predict(X[10],theta_list)[1])
 
 
 J = CostFunction(X, y, theta_list, lam)
