@@ -92,25 +92,30 @@ def CostFunction(x,y,theta,lam):
     Cost = 0 
     for m in range(num_data_list):
         y_m = (y[m])[:,np.newaxis]
-        log = np.log(Predict(x[m],theta)[1])
-        Cost += np.sum(y_m*log)+np.sum((1-y_m)*(1-log))
-    Cost += lam*(np.sum(theta[0][:, : 400]**2) + np.sum(theta[1][:, : 25]**2))
-    return Cost
+        log1 = np.log(Predict(x[m],theta)[1])
+        log2 = np.log(1-(Predict(x[m],theta)[1]))
+        Cost += np.sum((-1)*y_m*log1)+np.sum((-1)*(1-y_m)*log2)
+    Cost += (1/2)*lam*(np.sum(theta[0][:, : 400]**2) + np.sum(theta[1][:, : 25]**2))
+    return Cost/num_data_list
 
 def Backpropagation(x,y,theta,lam):
     num_data_list = x.shape[0]
-    DELTA_1 = []
-    DELTA_2 = []
+
     m = num_data_list
 
     for iter in range(10):
+        DELTA_1 = []
+        DELTA_2 = [] #初期化の位置変えた
         for M in range(num_data_list):
             x_m = x[M]
             y_m = y[M][:, np.newaxis]
             a1 = addBias(x_m)
             (a2, a3) = Predict(x_m,theta)
+
+            delta_2 = []
+            delta_3 = []
             
-            delta_3 = y_m - a3
+            delta_3 = a3 - y_m #引く順番逆だった
             delta_2 = (np.dot(theta[1].T, delta_3))*((a2)*(1-a2))
             delta_2 = np.delete(delta_2,0,0) #delta[0]を除去
             if M == 0:
@@ -180,3 +185,6 @@ J = CostFunction(X, y, theta_list, lam)
 print("Initial Cost = ", J, "\n")
 
 Backpropagation(X, y, theta_list, lam)
+
+print("Predict = \n", Predict(X[10],theta_list)[1])
+print("a2 = \n", Predict(X[10],theta_list)[0])
