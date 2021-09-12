@@ -12,6 +12,7 @@ import math
 import sys
 import scipy.io
 import random
+np.set_printoptions(suppress=True)
 """
 def make_gray_data(filepath):#一つの画像を読み込んでベクトルにする作業
     img = Image.open(filepath)
@@ -103,7 +104,7 @@ def Backpropagation(x,y,theta,lam):
 
     m = num_data_list
 
-    for iter in range(10):
+    for iter in range(100):
         DELTA_1 = []
         DELTA_2 = [] #初期化の位置変えた
         for M in range(num_data_list):
@@ -128,7 +129,7 @@ def Backpropagation(x,y,theta,lam):
         D_2 = calculate_D(theta[1],DELTA_2,lam,m)
         Refresh_theta(theta, D_1, D_2)
 
-        print("Cost = ", CostFunction(x, y, theta, lam))
+        print(f"{iter} th Cost = ", CostFunction(x, y, theta, lam))
 
     return(CostFunction(x, y, theta, lam))
 
@@ -186,5 +187,5 @@ print("Initial Cost = ", J, "\n")
 
 Backpropagation(X, y, theta_list, lam)
 
-print("Predict = \n", Predict(X[10],theta_list)[1])
+print("Predict = \n", np.round(Predict(X[10],theta_list)[1], decimals=5))
 print("a2 = \n", Predict(X[10],theta_list)[0])
