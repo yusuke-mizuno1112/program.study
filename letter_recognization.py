@@ -101,36 +101,39 @@ def CostFunction(x,y,theta,lam):
 
 def Backpropagation(x,y,theta,lam):
     num_data_list = x.shape[0]
-
     m = num_data_list
+    iter = 0
+    while True:
+        try:
+            DELTA_1 = []
+            DELTA_2 = [] #初期化の位置変えた
+            for M in range(num_data_list):
+                x_m = x[M]
+                y_m = y[M][:, np.newaxis]
+                a1 = addBias(x_m)
+                (a2, a3) = Predict(x_m,theta)
 
-    for iter in range(100):
-        DELTA_1 = []
-        DELTA_2 = [] #初期化の位置変えた
-        for M in range(num_data_list):
-            x_m = x[M]
-            y_m = y[M][:, np.newaxis]
-            a1 = addBias(x_m)
-            (a2, a3) = Predict(x_m,theta)
+                delta_2 = []
+                delta_3 = []
+                
+                delta_3 = a3 - y_m #引く順番逆だった
+                delta_2 = (np.dot(theta[1].T, delta_3))*((a2)*(1-a2))
+                delta_2 = np.delete(delta_2,0,0) #delta[0]を除去
+                if M == 0:
+                    DELTA_2 = np.dot(delta_3,a2.T)
+                    DELTA_1 = np.dot(delta_2,a1.T)
+                else:
+                    DELTA_2 += np.dot(delta_3,a2.T)
+                    DELTA_1 += np.dot(delta_2,a1.T)
+            D_1 = calculate_D(theta[0],DELTA_1,lam,m)
+            D_2 = calculate_D(theta[1],DELTA_2,lam,m)
+            Refresh_theta(theta, D_1, D_2)
 
-            delta_2 = []
-            delta_3 = []
-            
-            delta_3 = a3 - y_m #引く順番逆だった
-            delta_2 = (np.dot(theta[1].T, delta_3))*((a2)*(1-a2))
-            delta_2 = np.delete(delta_2,0,0) #delta[0]を除去
-            if M == 0:
-                DELTA_2 = np.dot(delta_3,a2.T)
-                DELTA_1 = np.dot(delta_2,a1.T)
-            else:
-                DELTA_2 += np.dot(delta_3,a2.T)
-                DELTA_1 += np.dot(delta_2,a1.T)
-        D_1 = calculate_D(theta[0],DELTA_1,lam,m)
-        D_2 = calculate_D(theta[1],DELTA_2,lam,m)
-        Refresh_theta(theta, D_1, D_2)
-
-        print(f"{iter} th Cost = ", CostFunction(x, y, theta, lam))
-
+            print(f"{iter} th Cost = ", CostFunction(x, y, theta, lam))
+            print("accuracy = ", accuracy(X, y, theta_list))
+            iter += 1
+        except KeyboardInterrupt:
+            break
     return(CostFunction(x, y, theta, lam))
 
 def Refresh_theta(theta,D1,D2):
@@ -157,35 +160,47 @@ def make_y_array(y_label, y):
         j = int(y_label[i])
         y[i][j] = 1
 
+def accuracy(x, y, theta):
+    correct_number = 0
+    num_data_list = x.shape[0]
+    m = num_data_list
+    for i in range(m):
+        pred = Predict(x[i], theta)[1]
+        answer = y[i]
+        if np.argmax(pred) == np.argmax(answer):
+            correct_number += 1
+    return correct_number/m
+
 outputs = 10 #アウトプット
 theta_list = make_theta(outputs) #theta 初期化
-
-
 
 
 """以下matファイルを使った作業"""
 #参考　https://www.delftstack.com/ja/howto/python/read-mat-files-python/#python-%25E3%2581%25A7-numpy-%25E3%2583%25A2%25E3%2582%25B8%25E3%2583%25A5%25E3%2583%25BC%25E3%2583%25AB%25E3%2582%2592%25E4%25BD%25BF%25E7%2594%25A8%25E3%2581%2597%25E3%2581%25A6mat-%25E3%2583%2595%25E3%2582%25A1%25E3%2582%25A4%25E3%2583%25AB%25E3%2582%2592%25E8%25AA%25AD%25E3%2581%25BF%25E5%258F%2596%25E3%2582%258A%25E3%2581%25BE%25E3%2581%2599
 
-X = scipy.io.loadmat('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/ex4data1.mat')["X"]
-y_label = scipy.io.loadmat('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/ex4data1.mat')["y"]
+dir_path = os.path.dirname(__file__)
+mat_path = os.path.join(dir_path, "ex4data1.mat")
+print(mat_path)
+
+#X = scipy.io.loadmat('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/ex4data1.mat')["X"]
+#y_label = scipy.io.loadmat('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/ex4data1.mat')["y"]
+
+X = scipy.io.loadmat(mat_path)["X"]
+y_label = scipy.io.loadmat(mat_path)["y"]
+
 y = np.zeros((y_label.shape[0], outputs))
 y_label[np.where(y_label == 10)] = 0
 lam = 0.1
 make_y_array(y_label, y)
-
 
 print("X-shape = ", X.shape)
 print("y-shape = ", y_label.shape)
 for i in range(2):
     print("theta_%s-shape = " % i, theta_list[i].shape)
 
-print("Predict = \n", Predict(X[10],theta_list)[1])
-
-
 J = CostFunction(X, y, theta_list, lam)
 print("Initial Cost = ", J, "\n")
 
 Backpropagation(X, y, theta_list, lam)
 
-print("Predict = \n", np.round(Predict(X[10],theta_list)[1], decimals=5))
-print("a2 = \n", Predict(X[10],theta_list)[0])
+print("\nlast accuracy = ", accuracy(X, y, theta_list))
