@@ -4,16 +4,19 @@ Created on Thu Aug 12 18:22:58 2021
 @author: mkamono
 """
 
-import glob2
-from PIL import Image
 import numpy as np
 import os
 import math
-import sys
 import scipy.io
-import random
+import time
+from matplotlib import pyplot as plt
 np.set_printoptions(suppress=True)
 """
+import glob2
+from PIL import Image
+import sys
+
+
 def make_gray_data(filepath):#一つの画像を読み込んでベクトルにする作業
     img = Image.open(filepath)
     gray_img = img.convert('L')
@@ -100,13 +103,17 @@ def CostFunction(x,y,theta,lam):
     return Cost/num_data_list
 
 def Backpropagation(x,y,theta,lam):
+    plt_J = []
+    plt_acc = []
+    iter_num = []
+    
     num_data_list = x.shape[0]
     m = num_data_list
-    iter = 0
+    iter = 1
     while True:
         try:
             DELTA_1 = []
-            DELTA_2 = [] #初期化の位置変えた
+            DELTA_2 = [] #初期化
             for M in range(num_data_list):
                 x_m = x[M]
                 y_m = y[M][:, np.newaxis]
@@ -116,7 +123,7 @@ def Backpropagation(x,y,theta,lam):
                 delta_2 = []
                 delta_3 = []
                 
-                delta_3 = a3 - y_m #引く順番逆だった
+                delta_3 = a3 - y_m
                 delta_2 = (np.dot(theta[1].T, delta_3))*((a2)*(1-a2))
                 delta_2 = np.delete(delta_2,0,0) #delta[0]を除去
                 if M == 0:
@@ -128,9 +135,22 @@ def Backpropagation(x,y,theta,lam):
             D_1 = calculate_D(theta[0],DELTA_1,lam,m)
             D_2 = calculate_D(theta[1],DELTA_2,lam,m)
             Refresh_theta(theta, D_1, D_2)
-
-            print(f"{iter} th Cost = ", CostFunction(x, y, theta, lam))
-            print("accuracy = ", accuracy(X, y, theta_list))
+            
+            J = CostFunction(x, y, theta, lam)
+            acc = accuracy(X, y, theta_list)
+            
+            plt_J.append(J)
+            plt_acc.append(acc)
+            iter_num.append(iter)
+            
+            plt.plot(iter_num, plt_acc)
+            plt.show()
+            
+            print(f"{iter} th Cost = ", J)
+            if iter % 10 == 0:
+                print("accuracy = ", acc, "%")
+                end = time.time()
+                print("経過時間 = ", round((end-start), 2), "秒")
             iter += 1
         except KeyboardInterrupt:
             break
@@ -169,38 +189,47 @@ def accuracy(x, y, theta):
         answer = y[i]
         if np.argmax(pred) == np.argmax(answer):
             correct_number += 1
-    return correct_number/m
+    oomakanumber = round((correct_number/m)*100, 4)
+    return oomakanumber
 
 outputs = 10 #アウトプット
-theta_list = make_theta(outputs) #theta 初期化
+
+if "theta_list" in globals():
+    theta_list = theta_list
+else:
+    theta_list = make_theta(outputs) #theta 初期化
 
 
-"""以下matファイルを使った作業"""
+#以下matファイルを使った作業
 #参考　https://www.delftstack.com/ja/howto/python/read-mat-files-python/#python-%25E3%2581%25A7-numpy-%25E3%2583%25A2%25E3%2582%25B8%25E3%2583%25A5%25E3%2583%25BC%25E3%2583%25AB%25E3%2582%2592%25E4%25BD%25BF%25E7%2594%25A8%25E3%2581%2597%25E3%2581%25A6mat-%25E3%2583%2595%25E3%2582%25A1%25E3%2582%25A4%25E3%2583%25AB%25E3%2582%2592%25E8%25AA%25AD%25E3%2581%25BF%25E5%258F%2596%25E3%2582%258A%25E3%2581%25BE%25E3%2581%2599
 
 dir_path = os.path.dirname(__file__)
 mat_path = os.path.join(dir_path, "ex4data1.mat")
 print(mat_path)
 
-#X = scipy.io.loadmat('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/ex4data1.mat')["X"]
-#y_label = scipy.io.loadmat('/mnt/chromeos/GoogleDrive/MyDrive/python/spyder/script_file/B2programing/ex4data1.mat')["y"]
-
 X = scipy.io.loadmat(mat_path)["X"]
 y_label = scipy.io.loadmat(mat_path)["y"]
 
 y = np.zeros((y_label.shape[0], outputs))
 y_label[np.where(y_label == 10)] = 0
-lam = 0.1
 make_y_array(y_label, y)
+
+lam = 0.1
+J = CostFunction(X, y, theta_list, lam)
 
 print("X-shape = ", X.shape)
 print("y-shape = ", y_label.shape)
 for i in range(2):
     print("theta_%s-shape = " % i, theta_list[i].shape)
 
-J = CostFunction(X, y, theta_list, lam)
-print("Initial Cost = ", J, "\n")
+print("Initial Cost = ", J)
+print("initial accuracy = ", accuracy(X, y, theta_list), "%")
+
+print("\nctrl + C を押した段階で学習を終了するよ!\n")
+
+start = time.time()
 
 Backpropagation(X, y, theta_list, lam)
 
-print("\nlast accuracy = ", accuracy(X, y, theta_list))
+
+print("\nlast accuracy = ", accuracy(X, y, theta_list), "%")
