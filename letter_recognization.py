@@ -11,6 +11,8 @@ import scipy.io
 import time
 from matplotlib import pyplot as plt
 np.set_printoptions(suppress=True)
+
+
 """
 import glob2
 from PIL import Image
@@ -102,12 +104,25 @@ def CostFunction(x,y,theta,lam):
     Cost += (1/2)*lam*(np.sum(theta[0][:, : 400]**2) + np.sum(theta[1][:, : 25]**2))
     return Cost/num_data_list
 
-def Backpropagation(x,y,theta,lam):
+def Backpropagation(x,y,theta,lam, training_set_number):
+    test_x = x[training_set_number:]
+    test_y = y[training_set_number:]
+
+    training_x = x[:(training_set_number-1)]
+    training_y = y[:(training_set_number-1)]
+
+    fig, ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+    ax3 = ax1.twinx()
+    ax2.set_ylim([0, 100])
+    ax3.set_ylim([0, 100])
+
     plt_J = []
     plt_acc = []
+    plt_test_acc = []
     iter_num = []
     
-    num_data_list = x.shape[0]
+    num_data_list = training_x.shape[0]
     m = num_data_list
     iter = 1
     while True:
@@ -115,8 +130,8 @@ def Backpropagation(x,y,theta,lam):
             DELTA_1 = []
             DELTA_2 = [] #初期化
             for M in range(num_data_list):
-                x_m = x[M]
-                y_m = y[M][:, np.newaxis]
+                x_m = training_x[M]
+                y_m = training_y[M][:, np.newaxis]
                 a1 = addBias(x_m)
                 (a2, a3) = Predict(x_m,theta)
 
@@ -136,23 +151,26 @@ def Backpropagation(x,y,theta,lam):
             D_2 = calculate_D(theta[1],DELTA_2,lam,m)
             Refresh_theta(theta, D_1, D_2)
             
-            J = CostFunction(x, y, theta, lam)
-            acc = accuracy(X, y, theta_list)
+            J = CostFunction(training_x, training_y, theta, lam)
+            acc = accuracy(training_x, training_y, theta)
+            test_acc = accuracy(test_x, test_y, theta)
             
             plt_J.append(J)
             plt_acc.append(acc)
+            plt_test_acc.append(test_acc)
             iter_num.append(iter)
-            
-            plt.plot(iter_num, plt_acc)
-            plt.show()
             
             print(f"{iter} th Cost = ", J)
             if iter % 10 == 0:
-                print("accuracy = ", acc, "%")
+                print("training_accuracy = ", acc, "%", "  test_accurancy = ", test_acc, "%")
                 end = time.time()
                 print("経過時間 = ", round((end-start), 2), "秒")
             iter += 1
         except KeyboardInterrupt:
+            ax1.plot(iter_num,plt_J ,"b-")
+            ax2.plot(iter_num,plt_acc  ,"r-")
+            ax3.plot(iter_num,plt_test_acc  ,"c-")
+            plt.show()
             break
     return(CostFunction(x, y, theta, lam))
 
@@ -192,44 +210,42 @@ def accuracy(x, y, theta):
     oomakanumber = round((correct_number/m)*100, 4)
     return oomakanumber
 
-outputs = 10 #アウトプット
 
-if "theta_list" in globals():
-    theta_list = theta_list
-else:
-    theta_list = make_theta(outputs) #theta 初期化
-
-
-#以下matファイルを使った作業
-#参考　https://www.delftstack.com/ja/howto/python/read-mat-files-python/#python-%25E3%2581%25A7-numpy-%25E3%2583%25A2%25E3%2582%25B8%25E3%2583%25A5%25E3%2583%25BC%25E3%2583%25AB%25E3%2582%2592%25E4%25BD%25BF%25E7%2594%25A8%25E3%2581%2597%25E3%2581%25A6mat-%25E3%2583%2595%25E3%2582%25A1%25E3%2582%25A4%25E3%2583%25AB%25E3%2582%2592%25E8%25AA%25AD%25E3%2581%25BF%25E5%258F%2596%25E3%2582%258A%25E3%2581%25BE%25E3%2581%2599
 
 dir_path = os.path.dirname(__file__)
 mat_path = os.path.join(dir_path, "ex4data1.mat")
-print(mat_path)
 
-X = scipy.io.loadmat(mat_path)["X"]
-y_label = scipy.io.loadmat(mat_path)["y"]
+outputs = 10 #アウトプット
 
-y = np.zeros((y_label.shape[0], outputs))
+if "theta_list" not in globals():
+    theta_list = make_theta(outputs) #theta 初期化
+
+X = (scipy.io.loadmat(mat_path)["X"])
+y_label = (scipy.io.loadmat(mat_path)["y"])
+
+Y = np.zeros((y_label.shape[0], outputs))
 y_label[np.where(y_label == 10)] = 0
-make_y_array(y_label, y)
+make_y_array(y_label, Y)
+
+p = np.random.permutation(X.shape[0])
+X = X[p]
+Y = Y[p]
 
 lam = 0.1
-J = CostFunction(X, y, theta_list, lam)
+training_set_number = 3000
+
+J = CostFunction(X, Y, theta_list, lam)
 
 print("X-shape = ", X.shape)
 print("y-shape = ", y_label.shape)
 for i in range(2):
     print("theta_%s-shape = " % i, theta_list[i].shape)
-
 print("Initial Cost = ", J)
-print("initial accuracy = ", accuracy(X, y, theta_list), "%")
-
+print("initial accuracy = ", accuracy(X, Y, theta_list), "%")
 print("\nctrl + C を押した段階で学習を終了するよ!\n")
 
 start = time.time()
 
-Backpropagation(X, y, theta_list, lam)
+Backpropagation(X, Y, theta_list, lam, training_set_number)
 
-
-print("\nlast accuracy = ", accuracy(X, y, theta_list), "%")
+print("\nlast accuracy = ", accuracy(X, Y, theta_list), "%")
